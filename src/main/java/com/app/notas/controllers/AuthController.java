@@ -17,17 +17,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
+import java.security.Principal;
 import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "http://localhost:4200")
+
 public class AuthController {
 
     @Autowired
@@ -44,6 +43,9 @@ public class AuthController {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private UsuarioRepository customUserDetailsService;
 
 
     @PostMapping("/login")
@@ -76,5 +78,10 @@ public class AuthController {
         usuarioRepository.save(usuario);
         return new ResponseEntity<>("Usuario Registrado exitosamente",HttpStatus.OK);
 
+    }
+
+    @GetMapping("/actual-usuario")
+    public Optional<Usuario> obtenerUsuarioActual(Principal principal){
+        return customUserDetailsService.findByUsernameOrEmail(principal.getName(),principal.getName());
     }
 }
