@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -16,11 +17,14 @@ public class Nota {
     @Getter @Setter
     private  Long idNota;
 
+    @NotNull
     @Getter @Setter
     private  String titulo;
 
+    @NotNull
     @Getter @Setter
     private  String cuerpo;
+
 
     @Column(name = "fecha_actualizacion")
     @Temporal(TemporalType.DATE)
@@ -32,13 +36,13 @@ public class Nota {
     @Getter @Setter
     private  Date fechaFinalizacion;
 
+    @NotNull
     @Getter @Setter
     private  Boolean terminada;
 
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id_usuario",insertable = false,updatable = false)
-    private  Usuario usuario;
+    @Getter @Setter
+    @Column(name = "id_usuario")
+    private  Long idUsuario;
 
 
 }

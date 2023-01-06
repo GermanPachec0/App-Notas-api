@@ -25,7 +25,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin("*")
 
 public class AuthController {
 
@@ -73,7 +73,7 @@ public class AuthController {
         usuario.setEmail(registroDTO.getEmail());
         usuario.setPassword(passwordEncoder.encode(registroDTO.getPassword()));
 
-        Rol roles = rolRepository.findByNombre("ROLE_ADMIN").get();
+        Rol roles = rolRepository.findByNombre("ROLE_USER").get();
         usuario.setRoles(Collections.singleton(roles));
         usuarioRepository.save(usuario);
         return new ResponseEntity<>("Usuario Registrado exitosamente",HttpStatus.OK);
