@@ -1,13 +1,10 @@
 package com.app.notas.controllers;
 
-import ch.qos.logback.classic.Logger;
 import com.app.notas.models.Nota;
 import com.app.notas.models.Usuario;
-import com.app.notas.repository.NotasRepository;
 import com.app.notas.repository.UsuarioRepository;
 import com.app.notas.service.NotaRepositoryImp;
-import com.app.notas.service.UsuarioRepositoryImp;
-import org.aspectj.weaver.ast.Not;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +26,11 @@ public class NotasController {
 
 
     @GetMapping("/me")
-    public ResponseEntity<List<Nota>> getNotasByUserId(Principal principal){
+    public ResponseEntity<List<Nota>> getNotasByUserId(@RequestParam(value = "pageNo",defaultValue = "0",required = false) int numeroDePagina,
+                                                       @RequestParam(value = "pageSize",defaultValue = "6") int medidaDePagina,
+                                                       Principal principal){
         Optional<Usuario> usuario=  usuarioRepository.findByUsernameOrEmail(principal.getName(),principal.getName());
-        List<Nota> notas = notaRepositoryImp.findByUsuario(usuario.get().getIdUsuario());
+        List<Nota> notas = notaRepositoryImp.findByUsuario(usuario.get().getIdUsuario(),numeroDePagina,medidaDePagina);
         return new ResponseEntity<>(notas,HttpStatus.OK);
     }
 
@@ -44,8 +43,6 @@ public class NotasController {
         if (id == null)
         {
             return new  ResponseEntity<>("Nota no encontrada",HttpStatus.NOT_FOUND);
-
-
         }
         if (usuario == null){
 
@@ -73,6 +70,20 @@ public class NotasController {
         }
         nota.setIdUsuario(usuario.get().getIdUsuario());
         return  new ResponseEntity<>(notaRepositoryImp.agregarNota(nota),HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public  ResponseEntity<Optional<Nota>> getNotaById(@PathVariable Long id,Principal principal){
+        Optional<Usuario> usuario=  usuarioRepository.findByUsernameOrEmail(principal.getName(),principal.getName());
+        Nota nota = new Nota();
+        nota.setIdNota(id);
+        if (usuario == null){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        if(notaRepositoryImp.getNotaByIdAndIdUsuario(nota,usuario).isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return  new ResponseEntity<>(notaRepositoryImp.getNotaByIdAndIdUsuario(nota,usuario),HttpStatus.OK);
     }
 
 }
