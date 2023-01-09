@@ -1,7 +1,9 @@
 package com.app.notas.controllers;
 
+import com.app.notas.dto.Pagination;
 import com.app.notas.models.Nota;
 import com.app.notas.models.Usuario;
+import com.app.notas.repository.NotasRepository;
 import com.app.notas.repository.UsuarioRepository;
 import com.app.notas.service.NotaRepositoryImp;
 
@@ -23,6 +25,8 @@ public class NotasController {
 
     @Autowired
     NotaRepositoryImp notaRepositoryImp;
+    @Autowired
+    private NotasRepository notasRepository;
 
 
     @GetMapping("/me")
@@ -84,6 +88,11 @@ public class NotasController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return  new ResponseEntity<>(notaRepositoryImp.getNotaByIdAndIdUsuario(nota,usuario),HttpStatus.OK);
+    }
+
+    @GetMapping("/pages")
+    public ResponseEntity<Pagination> getPagination(){
+        return new ResponseEntity<>(notaRepositoryImp.getPagesAndElements(),HttpStatus.OK);
     }
 
 }

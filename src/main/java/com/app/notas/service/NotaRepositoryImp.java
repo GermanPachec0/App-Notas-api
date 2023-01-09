@@ -1,5 +1,6 @@
 package com.app.notas.service;
 
+import com.app.notas.dto.Pagination;
 import com.app.notas.models.Nota;
 import com.app.notas.models.Usuario;
 import com.app.notas.repository.NotasRepository;
@@ -17,11 +18,17 @@ public class NotaRepositoryImp implements NotaService {
     @Autowired
     NotasRepository notasRepository;
 
+    private  Integer totalPages;
+    private  Long totalElementos;
+
     @Override
     public List<Nota> findByUsuario(Long id,int numeroDePagina,int medidaDePagina) {
         Pageable pageable = PageRequest.of(numeroDePagina,medidaDePagina);
         Page<Nota> notas = notasRepository.findByUsuario(id, pageable);
+        totalPages = notas.getTotalPages();
+        totalElementos = notas.getTotalElements();
         List<Nota> listNotas = notas.getContent();
+
         return listNotas;
     }
 
@@ -42,5 +49,12 @@ public class NotaRepositoryImp implements NotaService {
 
     public Optional<Nota> getNotaByIdAndIdUsuario(Nota nota, Optional<Usuario> usuario) {
         return  notasRepository.findNotaByIdNotaAndIdUsuario(nota.getIdNota(),usuario.get().getIdUsuario());
+    }
+
+    public Pagination getPagesAndElements(){
+            Pagination pagination = new Pagination();
+            pagination.setTotalPages(totalPages);
+            pagination.setTotalElements(totalElementos);
+            return  pagination;
     }
 }
