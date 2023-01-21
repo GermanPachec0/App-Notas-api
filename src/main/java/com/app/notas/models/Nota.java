@@ -1,15 +1,19 @@
 package com.app.notas.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
 @Table(name = "nota")
+@Data
 public class Nota {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,10 +22,12 @@ public class Nota {
     private  Long idNota;
 
     @NotNull
+    @NotBlank
     @Getter @Setter
     private  String titulo;
 
     @NotNull
+    @NotBlank
     @Getter @Setter
     private  String cuerpo;
 
@@ -36,7 +42,6 @@ public class Nota {
     @Getter @Setter
     private  Date fechaFinalizacion;
 
-    @NotNull
     @Getter @Setter
     private  Boolean terminada;
 
@@ -45,4 +50,21 @@ public class Nota {
     private  Long idUsuario;
 
 
+    @Override
+    public String toString() {
+        String notaTerminada;
+        if (terminada){
+            notaTerminada = "Tarea  Terminada";
+        }else {
+            notaTerminada = "Tarea No Terminada";
+        }
+
+        return "Nota : " +
+                "Titulo" + titulo + '\'' +
+                ", Descripcion '" + cuerpo + '\'' +
+                ", fechaActualizacion=" + fechaActualizacion +
+                ", fechaFinalizacion=" + fechaFinalizacion +
+                ", terminada=" + notaTerminada  +
+                '}';
+    }
 }

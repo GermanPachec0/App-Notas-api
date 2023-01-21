@@ -8,9 +8,12 @@ import com.app.notas.repository.UsuarioRepository;
 import com.app.notas.service.NotaRepositoryImp;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.security.Principal;
 import java.util.List;
@@ -31,7 +34,7 @@ public class NotasController {
 
     @GetMapping("/me")
     public ResponseEntity<List<Nota>> getNotasByUserId(@RequestParam(value = "pageNo",defaultValue = "0",required = false) int numeroDePagina,
-                                                       @RequestParam(value = "pageSize",defaultValue = "6") int medidaDePagina,
+                                                       @RequestParam(value = "pageSize",defaultValue = "8") int medidaDePagina,
                                                        Principal principal){
         Optional<Usuario> usuario=  usuarioRepository.findByUsernameOrEmail(principal.getName(),principal.getName());
         List<Nota> notas = notaRepositoryImp.findByUsuario(usuario.get().getIdUsuario(),numeroDePagina,medidaDePagina);
@@ -67,12 +70,15 @@ public class NotasController {
     }
 
     @PostMapping("/create")
-    public  ResponseEntity<Nota> agregarNota(@RequestBody Nota nota , Principal principal){
+    public  ResponseEntity<Nota> agregarNota(@RequestBody  Nota nota , Principal principal){
         Optional<Usuario> usuario=  usuarioRepository.findByUsernameOrEmail(principal.getName(),principal.getName());
         if (usuario == null){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         nota.setIdUsuario(usuario.get().getIdUsuario());
+        nota.setTerminada(false);
+
+
         return  new ResponseEntity<>(notaRepositoryImp.agregarNota(nota),HttpStatus.CREATED);
     }
 

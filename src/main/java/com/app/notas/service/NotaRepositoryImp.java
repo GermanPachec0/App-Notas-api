@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public class NotaRepositoryImp implements NotaService {
     @Autowired
     NotasRepository notasRepository;
+
 
     private  Integer totalPages;
     private  Long totalElementos;
@@ -44,7 +47,11 @@ public class NotaRepositoryImp implements NotaService {
 
     @Override
     public Nota agregarNota(Nota nota) {
-        return notasRepository.save(nota);
+        TelegramBoot telegramBoot = new TelegramBoot();
+        Nota notaSaved = notasRepository.save(nota);
+        telegramBoot.notificarNotaCreada(notaSaved);
+        return notaSaved;
+
     }
 
     public Optional<Nota> getNotaByIdAndIdUsuario(Nota nota, Optional<Usuario> usuario) {
